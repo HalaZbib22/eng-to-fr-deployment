@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="style.css" />
+    <title>English To French Translation - Hala Zbib</title>
+  </head>
+  <body>
+    <div class="main-container">
+      <div class="container-title">
+        Machine Translation Model
+        <br />
+        By Hala Zbib
+      </div>
+
+      <div class="translation-container">
+        <div class="area-container">
+          <label for="input-text-translate">Enter Text To Translate</label>
+          <textarea
+            id="input-text-translate"
+            class="text-area-translate"
+            placeholder="Enter text to translate"
+            rows="4"
+            cols="50"
+            onkeydown="checkWordLen(this);"
+          ></textarea>
+        </div>
+
+        <button class="btn-translate" onclick="getTranslation()">Translate</button>
+
+        <div id="translated-text" class="translated-text-container">
+          <label for="output-text-translate">Translated Text</label>
+          <textarea
+            id="output-text-translate"
+            class="translated-text"
+            placeholder="Here you will see translated text"
+            rows="4"
+            cols="50"
+            disabled
+          ></textarea>
+        </div>
+
+        <div id="error-message" class="error-message"></div>
+      </div>
+    </div>
+
+    <script type="text/javascript">
+      var wordLen = 15;
+
+      function checkWordLen(obj) {
+        var len = obj.value.split(/\s+/);
+        if (len.length > wordLen) {
+          alert("You cannot put more than " + wordLen + " words in this text area.");
+          obj.oldValue = obj.value != obj.oldValue ? obj.value : obj.oldValue;
+          obj.value = obj.oldValue ? obj.oldValue : "";
+          return false;
+        }
+        return true;
+      }
+
+      async function getRequest(url) {
+        const res = await fetch(url, {
+          method: "GET",
+          mode: "cors",
+        });
+        if (res.ok) {
+          return res.json();
+        } else {
+          throw new Error("Bad response");
+        }
+      }
+
+      async function getTranslation() {
+        var inputText = document.getElementById("input-text-translate").value;
+        const url = `https://translator-hala-944c5104e706.herokuapp.com/translate?english_sentence=${inputText}`;
+        try {
+          const data = await getRequest(url);
+          document.getElementById("output-text-translate").innerHTML =
+            data.french_translation;
+          document.getElementById("translated-text").style.display = "flex";
+          document.getElementById("error-message").innerHTML = "";
+        } catch (e) {
+          document.getElementById("error-message").innerHTML =
+            "Error Getting Translation: " + e;
+          console.log(e);
+        }
+      }
+    </script>
+  </body>
+</html>
